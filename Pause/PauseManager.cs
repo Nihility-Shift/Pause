@@ -3,6 +3,11 @@ using CG.Game;
 using Photon.Pun;
 using VoidManager.ModMessages;
 using Photon.Realtime;
+using System;
+using System.Reflection;
+using HarmonyLib;
+using UnityEngine;
+using System.Linq;
 
 namespace Pause
 {
@@ -10,7 +15,42 @@ namespace Pause
     {
         private const int version = 1;
 
-        internal static bool IsPaused { get; private set; } = false;
+        private static readonly FieldInfo characterHealthField = AccessTools.Field(typeof(CG.Game.Player.Player), "characterHealth");
+        private static readonly FieldInfo OxygenDepositField = AccessTools.Field(typeof(CG.Game.Player.LocalPlayer), "OxygenDeposit");
+
+        private static CG.Game.Player.LocalPlayer player;
+        private static float playerOxygen;
+        private static bool wasInvulnerable;
+        private static Vector3 position;
+
+        private static bool _isPaused = false;
+        internal static bool IsPaused
+        {
+            get => _isPaused;
+            private set
+            {
+                if (value != _isPaused)
+                {
+                    if (value)
+                    {
+                        VoidManager.Events.Instance.LateUpdate += WhilePaused;
+                        player = CG.Game.Player.LocalPlayer.Instance;
+                        CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
+                        wasInvulnerable = health.IsInvulnerable;
+                        health.IsInvulnerable = true;
+                        playerOxygen = ((Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player)).Value;
+                        position = player.Locomotion.Transform.position;
+                    }
+                    else
+                    {
+                        VoidManager.Events.Instance.LateUpdate -= WhilePaused;
+                        player = CG.Game.Player.LocalPlayer.Instance;
+                        CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
+                        health.IsInvulnerable = wasInvulnerable;
+                    }
+                }
+                _isPaused = value;
+            } }
         internal static bool CanPause { get; private set; } = false;
 
         internal static Player pausePlayer;
@@ -63,6 +103,23 @@ namespace Pause
             }
 
             SendPause(IsPaused, pausePlayer);
+        }
+
+        private static void WhilePaused(object o, EventArgs e)
+        {
+            Opsive.UltimateCharacterController.Traits.Attribute oxygenDeposit = (Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player);
+            if (oxygenDeposit.Value < playerOxygen)
+            {
+                oxygenDeposit.Value = playerOxygen;
+            }
+            if (player.Locomotion.Abilities.FirstOrDefault(ability => ability is MoveThroughPoints).IsActive)
+            {
+                position = player.Locomotion.Transform.position;
+            }
+            if (player.Locomotion.Transform.position != position)
+            {
+                player.Locomotion.Transform.position = position;
+            }
         }
 
         internal static void Reset()
