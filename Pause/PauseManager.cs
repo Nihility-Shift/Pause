@@ -8,6 +8,10 @@ using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
+using Gameplay.Enhancements;
+using CG.Ship.Modules;
+using Gameplay.PowerSystem;
 
 namespace Pause
 {
@@ -17,11 +21,18 @@ namespace Pause
 
         private static readonly FieldInfo characterHealthField = AccessTools.Field(typeof(CG.Game.Player.Player), "characterHealth");
         private static readonly FieldInfo OxygenDepositField = AccessTools.Field(typeof(CG.Game.Player.LocalPlayer), "OxygenDeposit");
+        private static readonly FieldInfo activationEndTimeField = AccessTools.Field(typeof(Enhancement), "_activationEndTime");
+        private static readonly FieldInfo currentTemperatureField = AccessTools.Field(typeof(ProtectedPowerSystem), "currentTemperature");
 
         private static CG.Game.Player.LocalPlayer player;
         private static float playerOxygen;
         private static bool wasInvulnerable;
         private static Vector3 position;
+
+        private static int startTime;
+        private static Dictionary<Enhancement, int> EngineTrims;
+        private static ProtectedPowerSystem breakers;
+        private static float breakerTemperature;
 
         private static bool _isPaused = false;
         internal static bool IsPaused
@@ -40,6 +51,11 @@ namespace Pause
                         health.IsInvulnerable = true;
                         playerOxygen = ((Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player)).Value;
                         position = player.Locomotion.Transform.position;
+                        startTime = PhotonNetwork.ServerTimestamp;
+                        EngineTrims = ClientGame.Current?.PlayerShip?.GetModule<Helm>()?.Engine?.GetComponentsInChildren<Enhancement>().ToDictionary(trim => trim, trim => (int)activationEndTimeField.GetValue(trim) - startTime);
+                        breakers = ClientGame.Current?.PlayerShip?.GetComponentInChildren<ProtectedPowerSystem>();
+                        float breakerTemp = (float)currentTemperatureField.GetValue(breakers);
+                        breakerTemperature = Mathf.Min(breakerTemp - breakers.BreakerTemperatureShiftSpeed.Value, breakerTemp);
                     }
                     else
                     {
@@ -120,6 +136,14 @@ namespace Pause
             {
                 player.Locomotion.Transform.position = position;
             }
+            int time = PhotonNetwork.ServerTimestamp;
+            foreach(KeyValuePair<Enhancement, int> pair in EngineTrims)
+            {
+                Enhancement trim = pair.Key;
+                int timeDifference = pair.Value;
+                activationEndTimeField.SetValue(trim, time + timeDifference);
+            }
+            currentTemperatureField.SetValue(breakers, breakerTemperature);
         }
 
         internal static void Reset()
