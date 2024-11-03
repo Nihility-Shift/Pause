@@ -11,7 +11,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Gameplay.Enhancements;
 using CG.Ship.Modules;
-using Gameplay.PowerSystem;
+using Gameplay.Power;
 
 namespace Pause
 {
