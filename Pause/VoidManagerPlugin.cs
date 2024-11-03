@@ -6,6 +6,7 @@ using CG.Input;
 using Photon.Pun;
 using VoidManager.MPModChecks;
 using VoidManager.Utilities;
+using VoidManager;
 
 namespace Pause
 {
@@ -51,8 +52,10 @@ namespace Pause
 
         public override MultiplayerType MPType => MultiplayerType.All;
 
-        public override string Author => "18107";
+        public override string Author => MyPluginInfo.PLUGIN_AUTHORS;
 
-        public override string Description => "Allows the game to be paused during a Void Jump";
+        public override string Description => MyPluginInfo.PLUGIN_DESCRIPTION;
+
+        public override string ThunderstoreID => MyPluginInfo.PLUGIN_THUNDERSTORE_ID;
     }
 }
