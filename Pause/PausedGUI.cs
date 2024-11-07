@@ -39,33 +39,37 @@ namespace Pause
         {
             FlexibleSpace();
             BeginHorizontal();
-            FlexibleSpace();
-            if (PauseManager.pausePlayer != null)
             {
-                Label($"Game paused by {PauseManager.pausePlayer.NickName}");
+                FlexibleSpace();
+                if (PauseManager.pausePlayer != null)
+                {
+                    Label($"Game paused by {PauseManager.pausePlayer.NickName}");
+                }
+                else
+                {
+                    Label("Game paused");
+                }
+                FlexibleSpace();
             }
-            else
-            {
-                Label("Game paused");
-            }
-            FlexibleSpace();
             EndHorizontal();
             Label("");
 
             BeginHorizontal();
-            FlexibleSpace();
-            if (PhotonNetwork.IsMasterClient || PauseManager.CanPause)
             {
-                if (Button("     Resume     "))
+                FlexibleSpace();
+                if (PhotonNetwork.IsMasterClient || PauseManager.CanPause)
                 {
-                    PauseManager.TryTogglePause();
+                    if (Button("     Resume     "))
+                    {
+                        PauseManager.TryTogglePause();
+                    }
                 }
+                else
+                {
+                    Button($"{(PauseManager.IsPaused ? "Resume" : "Pause")} not permitted by host");
+                }
+                FlexibleSpace();
             }
-            else
-            {
-                Button($"{(PauseManager.IsPaused ? "Resume" : "Pause")} not permitted by host");
-            }
-            FlexibleSpace();
             EndHorizontal();
             FlexibleSpace();
         }

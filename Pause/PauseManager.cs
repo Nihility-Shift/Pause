@@ -1,17 +1,17 @@
-﻿using CG.Game.SpaceObjects.Controllers;
-using CG.Game;
+﻿using CG.Game;
+using CG.Game.SpaceObjects.Controllers;
+using CG.Ship.Modules;
+using Gameplay.Enhancements;
+using Gameplay.Power;
+using HarmonyLib;
 using Photon.Pun;
-using VoidManager.ModMessages;
 using Photon.Realtime;
 using System;
-using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
-using Gameplay.Enhancements;
-using CG.Ship.Modules;
-using Gameplay.Power;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
+using VoidManager.ModMessages;
 
 namespace Pause
 {

@@ -1,34 +1,34 @@
 ﻿using BepInEx;
 using CG;
-using CG.Game.SpaceObjects.Controllers;
 using CG.Game;
+using CG.Game.SpaceObjects.Controllers;
 using CG.Input;
 using Photon.Pun;
+using VoidManager;
 using VoidManager.MPModChecks;
 using VoidManager.Utilities;
-using VoidManager;
 
 namespace Pause
 {
-    public class VoidManagerPlugin : VoidManager.VoidPlugin
+    public class VoidManagerPlugin : VoidPlugin
     {
         public VoidManagerPlugin()
         {
-            VoidManager.Events.Instance.PlayerEnteredRoom += (_, playerEventArgs) =>
+            Events.Instance.PlayerEnteredRoom += (_, playerEventArgs) =>
             {
                 PauseManager.SendCanPause(playerEventArgs.player);
                 PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, playerEventArgs.player);
             };
 
-            VoidManager.Events.Instance.MasterClientSwitched += (_, _) =>
+            Events.Instance.MasterClientSwitched += (_, _) =>
             {
                 PauseManager.SendCanPause();
                 PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer);
             };
 
-            VoidManager.Events.Instance.LeftRoom += (_, _) => PauseManager.Reset();
+            Events.Instance.LeftRoom += (_, _) => PauseManager.Reset();
 
-            VoidManager.Events.Instance.LateUpdate += (_, _) =>
+            Events.Instance.LateUpdate += (_, _) =>
             {
                 if (Configs.pauseKeyConfig.Value != UnityEngine.KeyCode.None && UnityInput.Current.GetKeyDown(Configs.pauseKeyConfig.Value) &&
                     (!ServiceBase<InputService>.Instance.CursorVisibilityControl.IsCursorShown || PauseManager.IsPaused))
