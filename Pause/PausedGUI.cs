@@ -31,7 +31,7 @@ namespace Pause
             if (guiActive)
             {
                 InputActionMapRequests.AddOrChangeRequest(this, InputStateRequestType.UI);
-                UnityEngine.GUI.Window(718107, WindowPos, WindowFunction, "Game Paused");
+                UnityEngine.GUI.Window(618107, WindowPos, WindowFunction, "Game Paused");
             }
         }
 
