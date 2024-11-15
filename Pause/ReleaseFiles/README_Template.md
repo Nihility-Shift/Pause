@@ -36,3 +36,10 @@ Ensure that you have [BepInEx 5](https://thunderstore.io/c/void-crew/p/BepInEx/B
 #### ✔️ Mod installation - **Unzip the contents into the BepInEx plugin directory**
 
 Drag and drop `[ModName].dll` into `Void Crew\BepInEx\plugins`
+
+---------------------
+
+## Known Issues
+
+- Joining a paused multiplayer session starts dsynced
+- Joining a running multiplayer session may lead to the player being stuck when paused.

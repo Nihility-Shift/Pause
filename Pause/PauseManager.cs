@@ -40,33 +40,34 @@ namespace Pause
             get => _isPaused;
             private set
             {
-                if (value != _isPaused)
-                {
-                    if (value)
-                    {
-                        VoidManager.Events.Instance.LateUpdate += WhilePaused;
-                        player = CG.Game.Player.LocalPlayer.Instance;
-                        CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
-                        wasInvulnerable = health.IsInvulnerable;
-                        health.IsInvulnerable = true;
-                        playerOxygen = ((Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player)).Value;
-                        position = player.Locomotion.Transform.position;
-                        startTime = PhotonNetwork.ServerTimestamp;
-                        EngineTrims = ClientGame.Current?.PlayerShip?.GetModule<Helm>()?.Engine?.GetComponentsInChildren<Enhancement>().ToDictionary(trim => trim, trim => (int)activationEndTimeField.GetValue(trim) - startTime);
-                        breakers = ClientGame.Current?.PlayerShip?.GetComponentInChildren<ProtectedPowerSystem>();
-                        float breakerTemp = (float)currentTemperatureField.GetValue(breakers);
-                        breakerTemperature = Mathf.Min(breakerTemp - breakers.BreakerTemperatureShiftSpeed.Value, breakerTemp);
-                    }
-                    else
-                    {
-                        VoidManager.Events.Instance.LateUpdate -= WhilePaused;
-                        player = CG.Game.Player.LocalPlayer.Instance;
-                        CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
-                        health.IsInvulnerable = wasInvulnerable;
-                    }
-                }
+                if (value == _isPaused)
+                    return;
+
                 _isPaused = value;
-            } }
+                if (value)
+                {
+                    VoidManager.Events.Instance.LateUpdate += WhilePaused;
+                    player = CG.Game.Player.LocalPlayer.Instance;
+                    CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
+                    wasInvulnerable = health.IsInvulnerable;
+                    health.IsInvulnerable = true;
+                    playerOxygen = ((Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player)).Value;
+                    position = player.Locomotion.Transform.position;
+                    startTime = PhotonNetwork.ServerTimestamp;
+                    EngineTrims = ClientGame.Current?.PlayerShip?.GetModule<Helm>()?.Engine?.GetComponentsInChildren<Enhancement>().ToDictionary(trim => trim, trim => (int)activationEndTimeField.GetValue(trim) - startTime);
+                    breakers = ClientGame.Current?.PlayerShip?.GetComponentInChildren<ProtectedPowerSystem>();
+                    float breakerTemp = (float)currentTemperatureField.GetValue(breakers);
+                    breakerTemperature = Mathf.Min(breakerTemp - breakers.BreakerTemperatureShiftSpeed.Value, breakerTemp);
+                }
+                else
+                {
+                    VoidManager.Events.Instance.LateUpdate -= WhilePaused;
+                    player = CG.Game.Player.LocalPlayer.Instance;
+                    CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
+                    health.IsInvulnerable = wasInvulnerable;
+                }
+            }
+        }
         internal static bool CanPause { get; private set; } = false;
 
         internal static Player pausePlayer;
@@ -137,7 +138,7 @@ namespace Pause
                 player.Locomotion.Transform.position = position;
             }
             int time = PhotonNetwork.ServerTimestamp;
-            foreach(KeyValuePair<Enhancement, int> pair in EngineTrims)
+            foreach (KeyValuePair<Enhancement, int> pair in EngineTrims)
             {
                 Enhancement trim = pair.Key;
                 int timeDifference = pair.Value;
