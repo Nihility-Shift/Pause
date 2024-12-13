@@ -66,25 +66,8 @@ namespace Pause
             }
 
 
-            //Toggle pause and store or restore prior jump stability.
-            if (IsPaused)
-            {
-                IsPaused = false;
-                if (!stable)
-                {
-                    voidJumpSystem.ChangeActiveState<VoidJumpTravellingUnstable>();
-                    stable = true;
-                }
-            }
-            else
-            {
-                IsPaused = true;
-                if (voidJumpState is VoidJumpTravellingUnstable)
-                {
-                    stable = false;
-                    voidJumpSystem.ChangeActiveState<VoidJumpTravellingStable>();
-                }
-            }
+
+            IsPaused = !IsPaused;
             BepinPlugin.Log.LogInfo($"Toggled Pause from handler");
 
             ServerTimestampPatch.UpdateTimeDifference(IsPaused);
