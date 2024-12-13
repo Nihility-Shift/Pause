@@ -70,12 +70,15 @@ namespace Pause
 
         internal static void TryTogglePause(Player pauser = null)
         {
+            //If not master, send request to master and stop.
             if (!PhotonNetwork.IsMasterClient)
             {
                 RequestPause(!IsPaused);
                 return;
             }
 
+
+            //Check void jump system is in a travelling state. Stop and unpause if not travelling (saves users who got stuck somehow, and blocks pausing outside of void jump travelling)
             VoidJumpSystem voidJumpSystem = ClientGame.Current?.PlayerShip?.transform?.GetComponent<VoidJumpSystem>();
             VoidJumpState voidJumpState = voidJumpSystem?.ActiveState;
             if (voidJumpState == null)
@@ -107,7 +110,7 @@ namespace Pause
                 }
             }
 
-            SendPause(IsPaused, pausePlayer);
+            //Actually pause.
         }
 
         /*private static void WhilePaused(object o, EventArgs e)
@@ -143,12 +146,13 @@ namespace Pause
         public override void Handle(object[] arguments, Player sender)
         {
             if (arguments.Length < 3) return;
-            if (((int)arguments[0]) != version)
+            if (((int)arguments[0]) != version) //Message Send Version
             {
                 BepinPlugin.Log.LogInfo($"Received version {(int)arguments[0]}, expected {version}");
                 return;
             }
 
+            //If message is request pause, is host, and players are allowed to pause, attempt pausing.
             if (PhotonNetwork.IsMasterClient)
             {
                 if (((MessageType)arguments[1]) == MessageType.Pause && Configs.playersCanPauseConfig.Value && ((bool)arguments[2]) != IsPaused)
@@ -159,8 +163,10 @@ namespace Pause
                 return;
             }
 
-            if (sender != PhotonNetwork.MasterClient) return;
+            //stop early if sender isn't host.
+            if (!sender.IsMasterClient) return;
 
+            //execute message type, pause vs allowing pause.
             switch ((MessageType)arguments[1])
             {
                 case MessageType.Pause:

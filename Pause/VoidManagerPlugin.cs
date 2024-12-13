@@ -28,6 +28,7 @@ namespace Pause
 
             Events.Instance.LeftRoom += (_, _) => PauseManager.Reset();
 
+            //read pause keybind and run local pause checks.
             Events.Instance.LateUpdate += (_, _) =>
             {
                 if (Configs.pauseKeyConfig.Value != UnityEngine.KeyCode.None && UnityInput.Current.GetKeyDown(Configs.pauseKeyConfig.Value) &&
