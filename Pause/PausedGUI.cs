@@ -66,6 +66,7 @@ namespace Pause
                 }
                 else
                 {
+                    // Pause option never visible.
                     Button($"{(PauseManager.IsPaused ? "Resume" : "Pause")} not permitted by host");
                 }
                 FlexibleSpace();

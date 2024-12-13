@@ -19,20 +19,20 @@ namespace Pause
     {
         private const int version = 1;
 
-        private static readonly FieldInfo characterHealthField = AccessTools.Field(typeof(CG.Game.Player.Player), "characterHealth");
-        private static readonly FieldInfo OxygenDepositField = AccessTools.Field(typeof(CG.Game.Player.LocalPlayer), "OxygenDeposit");
-        private static readonly FieldInfo activationEndTimeField = AccessTools.Field(typeof(Enhancement), "_activationEndTime");
-        private static readonly FieldInfo currentTemperatureField = AccessTools.Field(typeof(ProtectedPowerSystem), "currentTemperature");
+        //private static readonly FieldInfo characterHealthField = AccessTools.Field(typeof(CG.Game.Player.Player), "characterHealth");
+        //private static readonly FieldInfo OxygenDepositField = AccessTools.Field(typeof(CG.Game.Player.LocalPlayer), "OxygenDeposit");
+        //private static readonly FieldInfo activationEndTimeField = AccessTools.Field(typeof(Enhancement), "_activationEndTime");
+        //private static readonly FieldInfo currentTemperatureField = AccessTools.Field(typeof(ProtectedPowerSystem), "currentTemperature");
 
-        private static CG.Game.Player.LocalPlayer player;
-        private static float playerOxygen;
-        private static bool wasInvulnerable;
-        private static Vector3 position;
+        //private static CG.Game.Player.LocalPlayer player;
+        //private static float playerOxygen;
+        //private static bool wasInvulnerable;
+        //private static Vector3 position;
 
-        private static int startTime;
-        private static Dictionary<Enhancement, int> EngineTrims;
-        private static ProtectedPowerSystem breakers;
-        private static float breakerTemperature;
+        //private static int startTime;
+        //private static Dictionary<Enhancement, int> EngineTrims;
+        //private static ProtectedPowerSystem breakers;
+        //private static float breakerTemperature;
 
         private static bool _isPaused = false;
         internal static bool IsPaused
@@ -40,31 +40,19 @@ namespace Pause
             get => _isPaused;
             private set
             {
-                if (value == _isPaused)
-                    return;
+                if (value == _isPaused) return;
 
+                //assign isPaused value and timescale for unity pausing. Fix Photon non communicating during pause.
                 _isPaused = value;
                 if (value)
                 {
-                    VoidManager.Events.Instance.LateUpdate += WhilePaused;
-                    player = CG.Game.Player.LocalPlayer.Instance;
-                    CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
-                    wasInvulnerable = health.IsInvulnerable;
-                    health.IsInvulnerable = true;
-                    playerOxygen = ((Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player)).Value;
-                    position = player.Locomotion.Transform.position;
-                    startTime = PhotonNetwork.ServerTimestamp;
-                    EngineTrims = ClientGame.Current?.PlayerShip?.GetModule<Helm>()?.Engine?.GetComponentsInChildren<Enhancement>().ToDictionary(trim => trim, trim => (int)activationEndTimeField.GetValue(trim) - startTime);
-                    breakers = ClientGame.Current?.PlayerShip?.GetComponentInChildren<ProtectedPowerSystem>();
-                    float breakerTemp = (float)currentTemperatureField.GetValue(breakers);
-                    breakerTemperature = Mathf.Min(breakerTemp - breakers.BreakerTemperatureShiftSpeed.Value, breakerTemp);
+                    PhotonNetwork.MinimalTimeScaleToDispatchInFixedUpdate = 0f;
+                    Time.timeScale = 0f;
                 }
                 else
                 {
-                    VoidManager.Events.Instance.LateUpdate -= WhilePaused;
-                    player = CG.Game.Player.LocalPlayer.Instance;
-                    CustomCharacterHealth health = (CustomCharacterHealth)characterHealthField.GetValue(player);
-                    health.IsInvulnerable = wasInvulnerable;
+                    Time.timeScale = 1f;
+                    PhotonNetwork.MinimalTimeScaleToDispatchInFixedUpdate = -1f;
                 }
             }
         }
@@ -122,7 +110,7 @@ namespace Pause
             SendPause(IsPaused, pausePlayer);
         }
 
-        private static void WhilePaused(object o, EventArgs e)
+        /*private static void WhilePaused(object o, EventArgs e)
         {
             Opsive.UltimateCharacterController.Traits.Attribute oxygenDeposit = (Opsive.UltimateCharacterController.Traits.Attribute)OxygenDepositField.GetValue(player);
             if (oxygenDeposit.Value < playerOxygen)
@@ -145,7 +133,7 @@ namespace Pause
                 activationEndTimeField.SetValue(trim, time + timeDifference);
             }
             currentTemperatureField.SetValue(breakers, breakerTemperature);
-        }
+        }*/
 
         internal static void Reset()
         {
