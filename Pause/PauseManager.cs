@@ -73,6 +73,7 @@ namespace Pause
             //If not master, send request to master and stop.
             if (!PhotonNetwork.IsMasterClient)
             {
+                BepinPlugin.Log.LogInfo("TryToggle non-host triggered.");
                 RequestPause(!IsPaused);
                 return;
             }
@@ -109,6 +110,7 @@ namespace Pause
                     voidJumpSystem.ChangeActiveState<VoidJumpTravellingStable>();
                 }
             }
+            BepinPlugin.Log.LogInfo($"Toggled Pause, next attempting to send.");
 
             //Actually pause.
         }
@@ -155,6 +157,7 @@ namespace Pause
             //If message is request pause, is host, and players are allowed to pause, attempt pausing.
             if (PhotonNetwork.IsMasterClient)
             {
+                BepinPlugin.Log.LogInfo($"Recieved Pause Request ({(bool)arguments[2]}) message from {sender.NickName}");
                 if (((MessageType)arguments[1]) == MessageType.Pause && Configs.playersCanPauseConfig.Value && ((bool)arguments[2]) != IsPaused)
                 {
                     pausePlayer = sender;
@@ -170,11 +173,13 @@ namespace Pause
             switch ((MessageType)arguments[1])
             {
                 case MessageType.Pause:
+                    BepinPlugin.Log.LogInfo($"Recieved Pause ({(bool)arguments[2]}) message from {sender.NickName}");
                     IsPaused = (bool)arguments[2];
                     if (arguments.Length >= 4)
                         pausePlayer = PhotonNetwork.CurrentRoom.GetPlayer((int)arguments[3]);
                     break;
                 case MessageType.CanPause:
+                    BepinPlugin.Log.LogInfo($"Recieved CanPause message from {sender.NickName}");
                     CanPause = (bool)arguments[2];
                     break;
             }
@@ -185,6 +190,7 @@ namespace Pause
             if (PhotonNetwork.IsMasterClient) return;
 
             Send(new object[] { version, MessageType.Pause, pause }, PhotonNetwork.MasterClient);
+            BepinPlugin.Log.LogInfo("RequestPause sent.");
         }
 
         internal static void SendPause(bool pause, Player pauser, params Player[] players)
@@ -192,6 +198,7 @@ namespace Pause
             if (!PhotonNetwork.IsMasterClient) return;
 
             Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber }, players);
+            BepinPlugin.Log.LogInfo("SendPause sent.");
         }
 
         internal static void SendCanPause(params Player[] players)
