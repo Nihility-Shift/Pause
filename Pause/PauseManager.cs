@@ -85,17 +85,19 @@ namespace Pause
                     voidJumpSystem.ChangeActiveState<VoidJumpTravellingStable>();
                 }
             }
-            BepinPlugin.Log.LogInfo($"Toggled Pause, next attempting to send.");
+            BepinPlugin.Log.LogInfo($"Toggled Pause from handler");
+
+            ServerTimestampPatch.UpdateTimeDifference(IsPaused);
 
             //Actually pause.
             pausePlayer = pauser ?? PhotonNetwork.LocalPlayer;
-            SendPause(IsPaused, pausePlayer, ServerTimestampsPatch.GetLocalTimeDif());
+            SendPause(IsPaused, pausePlayer);
         }
 
         internal static void Reset()
         {
             IsPaused = false;
-            ServerTimestampsPatch.hostTimeDifference = 0f;
+            ServerTimestampPatch.PauseTotal = 0;
         }
 
         public override void Handle(object[] arguments, Player sender)
@@ -126,15 +128,24 @@ namespace Pause
             switch ((MessageType)arguments[1])
             {
                 case MessageType.Pause:
-                    BepinPlugin.Log.LogInfo($"Recieved Pause ({(bool)arguments[2]}) message from {sender.NickName}");
-                    IsPaused = (bool)arguments[2];
-                    if (arguments.Length >= 4)
+                    {
+                        BepinPlugin.Log.LogInfo($"Recieved Pause ({(bool)arguments[2]}) message from {sender.NickName}");
+                        IsPaused = (bool)arguments[2];
+                        if (arguments.Length <= 3)
+                            break;
                         pausePlayer = PhotonNetwork.CurrentRoom.GetPlayer((int)arguments[3]);
-                    break;
+                        ServerTimestampPatch.PauseTotal = (int)arguments[4];
+
+                        //Update CachedTime for client
+                        ServerTimestampPatch.UpdateTimeDifference(true);
+                        break;
+                    }
                 case MessageType.CanPause:
-                    BepinPlugin.Log.LogInfo($"Recieved CanPause message from {sender.NickName}");
-                    CanPause = (bool)arguments[2];
-                    break;
+                    {
+                        BepinPlugin.Log.LogInfo($"Recieved CanPause message from {sender.NickName}");
+                        CanPause = (bool)arguments[2];
+                        break;
+                    }
             }
         }
 
@@ -146,11 +157,11 @@ namespace Pause
             BepinPlugin.Log.LogInfo("RequestPause sent.");
         }
 
-        internal static void SendPause(bool pause, Player pauser, float hostTimeDif, params Player[] players)
+        internal static void SendPause(bool pause, Player pauser, params Player[] players)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber, hostTimeDif }, players);
+            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber, ServerTimestampPatch.PauseTotal }, players);
             BepinPlugin.Log.LogInfo("SendPause sent.");
         }
 

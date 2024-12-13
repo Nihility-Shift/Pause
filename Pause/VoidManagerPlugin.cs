@@ -3,7 +3,9 @@ using CG;
 using CG.Game;
 using CG.Game.SpaceObjects.Controllers;
 using CG.Input;
+using HarmonyLib;
 using Photon.Pun;
+using System.Reflection;
 using VoidManager;
 using VoidManager.MPModChecks;
 using VoidManager.Utilities;
@@ -19,13 +21,13 @@ namespace Pause
             Events.Instance.PlayerEnteredRoom += (_, playerEventArgs) =>
             {
                 PauseManager.SendCanPause(playerEventArgs.player);
-                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, ServerTimestampsPatch.GetLocalTimeDif(), playerEventArgs.player);
+                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, playerEventArgs.player);
             };
 
             Events.Instance.MasterClientSwitched += (_, _) =>
             {
                 PauseManager.SendCanPause();
-                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, ServerTimestampsPatch.GetLocalTimeDif());
+                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer);
             };
 
             Events.Instance.LeftRoom += (_, _) => PauseManager.Reset();
