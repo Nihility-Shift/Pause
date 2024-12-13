@@ -17,13 +17,13 @@ namespace Pause
             Events.Instance.PlayerEnteredRoom += (_, playerEventArgs) =>
             {
                 PauseManager.SendCanPause(playerEventArgs.player);
-                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, playerEventArgs.player);
+                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, ServerTimestampsPatch.GetLocalTimeDif(), playerEventArgs.player);
             };
 
             Events.Instance.MasterClientSwitched += (_, _) =>
             {
                 PauseManager.SendCanPause();
-                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer);
+                PauseManager.SendPause(PauseManager.IsPaused, PauseManager.pausePlayer ?? PhotonNetwork.LocalPlayer, ServerTimestampsPatch.GetLocalTimeDif());
             };
 
             Events.Instance.LeftRoom += (_, _) => PauseManager.Reset();

@@ -1,15 +1,7 @@
 ﻿using CG.Game;
 using CG.Game.SpaceObjects.Controllers;
-using CG.Ship.Modules;
-using Gameplay.Enhancements;
-using Gameplay.Power;
-using HarmonyLib;
 using Photon.Pun;
 using Photon.Realtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using VoidManager.ModMessages;
 
@@ -17,7 +9,7 @@ namespace Pause
 {
     internal class PauseManager : ModMessage
     {
-        private const int version = 1;
+        private const int version = 2;
 
         //private static readonly FieldInfo characterHealthField = AccessTools.Field(typeof(CG.Game.Player.Player), "characterHealth");
         //private static readonly FieldInfo OxygenDepositField = AccessTools.Field(typeof(CG.Game.Player.LocalPlayer), "OxygenDeposit");
@@ -143,6 +135,7 @@ namespace Pause
         internal static void Reset()
         {
             IsPaused = false;
+            ServerTimestampsPatch.hostTimeDifference = 0f;
         }
 
         public override void Handle(object[] arguments, Player sender)
@@ -165,7 +158,7 @@ namespace Pause
                 }
                 return;
             }
-
+            
             //stop early if sender isn't host.
             if (!sender.IsMasterClient) return;
 
@@ -193,11 +186,11 @@ namespace Pause
             BepinPlugin.Log.LogInfo("RequestPause sent.");
         }
 
-        internal static void SendPause(bool pause, Player pauser, params Player[] players)
+        internal static void SendPause(bool pause, Player pauser, float hostTimeDif, params Player[] players)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber }, players);
+            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber, hostTimeDif }, players);
             BepinPlugin.Log.LogInfo("SendPause sent.");
         }
 
