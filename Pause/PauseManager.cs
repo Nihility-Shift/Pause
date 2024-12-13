@@ -70,7 +70,7 @@ namespace Pause
             IsPaused = !IsPaused;
             BepinPlugin.Log.LogInfo($"Toggled Pause from handler");
 
-            ServerTimestampPatch.UpdateTimeDifference(IsPaused);
+            ServerTimestampPatch.UpdateTiming(IsPaused);
 
             //Actually pause.
             pausePlayer = pauser ?? PhotonNetwork.LocalPlayer;
@@ -120,7 +120,7 @@ namespace Pause
                         ServerTimestampPatch.PauseTotal = (int)arguments[4];
 
                         //Update CachedTime for client
-                        ServerTimestampPatch.UpdateTimeDifference(true);
+                        ServerTimestampPatch.UpdateTiming(true);
                         break;
                     }
                 case MessageType.CanPause:
@@ -144,7 +144,7 @@ namespace Pause
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber, ServerTimestampPatch.PauseTotal }, players);
+            Send(new object[] { version, MessageType.Pause, pause, pauser.ActorNumber, ServerTimestampPatch.GetPauseTotalForClient() }, players);
             BepinPlugin.Log.LogInfo("SendPause sent.");
         }
 

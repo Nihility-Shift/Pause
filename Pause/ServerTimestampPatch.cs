@@ -15,8 +15,15 @@ namespace Pause
         //You will run out of avalable pause time after 24 days of being paused
         internal static int PauseTotal;
 
+        internal static int GetPauseTotalForClient()
+        {
+            if (PauseManager.IsPaused)
+                return PauseTotal + UnmodifiedServerTimestamp() - cachedServerTime;
+            else
+                return PauseTotal;
+        }
 
-        //Unmodified value, for when pausing isn't an issue.
+
         static FieldInfo StartupStopwatchFI = AccessTools.Field(typeof(PhotonNetwork), "StartupStopwatch");
 
         public static int UnmodifiedServerTimestamp()
@@ -32,15 +39,15 @@ namespace Pause
             return Environment.TickCount;
         }
 
-        internal static void UpdateTimeDifference(bool pause)
+        internal static void UpdateTiming(bool paused)
         {
-            if (pause)
+            if (paused)
                 cachedServerTime = UnmodifiedServerTimestamp();
             else
                 PauseTotal += UnmodifiedServerTimestamp() - cachedServerTime;
         }
 
-        //ServerTime -= LocalTimeDif + HostTimeDif
+        //ServerTime -= PauseTotal
         static void Postfix(ref int __result)
         {
             if (PauseManager.IsPaused)
