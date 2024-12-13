@@ -82,16 +82,14 @@ namespace Pause
             //Check void jump system is in a travelling state. Stop and unpause if not travelling (saves users who got stuck somehow, and blocks pausing outside of void jump travelling)
             VoidJumpSystem voidJumpSystem = ClientGame.Current?.PlayerShip?.transform?.GetComponent<VoidJumpSystem>();
             VoidJumpState voidJumpState = voidJumpSystem?.ActiveState;
-            if (voidJumpState == null)
+            if (voidJumpState == null || (voidJumpState is not VoidJumpTravellingStable && voidJumpState is not VoidJumpTravellingUnstable))
             {
                 IsPaused = false;
                 return;
             }
 
-            if (voidJumpState is not VoidJumpTravellingStable && voidJumpState is not VoidJumpTravellingUnstable) return;
 
-            pausePlayer = pauser ?? PhotonNetwork.LocalPlayer;
-
+            //Toggle pause and store or restore prior jump stability.
             if (IsPaused)
             {
                 IsPaused = false;
@@ -113,6 +111,8 @@ namespace Pause
             BepinPlugin.Log.LogInfo($"Toggled Pause, next attempting to send.");
 
             //Actually pause.
+            pausePlayer = pauser ?? PhotonNetwork.LocalPlayer;
+            SendPause(IsPaused, pausePlayer, ServerTimestampsPatch.GetLocalTimeDif());
         }
 
         /*private static void WhilePaused(object o, EventArgs e)
