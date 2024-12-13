@@ -14,6 +14,8 @@ namespace Pause
     {
         public VoidManagerPlugin()
         {
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
+
             Events.Instance.PlayerEnteredRoom += (_, playerEventArgs) =>
             {
                 PauseManager.SendCanPause(playerEventArgs.player);
