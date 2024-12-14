@@ -33,6 +33,7 @@ namespace Pause
             }
             else
             {
+                //Pause option never seen/used
                 Button($"{(PauseManager.IsPaused ? "Resume" : "Pause")} not permitted by host");
             }
             Label("");

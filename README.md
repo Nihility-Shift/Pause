@@ -1,20 +1,22 @@
 [![](https://img.shields.io/badge/-Void_Crew_Modding_Team-111111?style=just-the-label&logo=github&labelColor=24292f)](https://github.com/Void-Crew-Modding-Team)
-![](https://img.shields.io/badge/Game%20Version-0.27.1-111111?style=flat&labelColor=24292f&color=111111)
+![](https://img.shields.io/badge/Game%20Version-1.0.2-111111?style=flat&labelColor=24292f&color=111111)
 [![](https://img.shields.io/discord/1180651062550593536.svg?&logo=discord&logoColor=ffffff&style=flat&label=Discord&labelColor=24292f&color=111111)](https://discord.gg/g2u5wpbMGu "Void Crew Modding Discord")
 
 # Pause
 
-Version 0.0.3  
-For Game Version 0.27.1  
-Developed by 18107  
-Requires:  BepInEx-BepInExPack-5.4.2100, VoidCrewModdingTeam-VoidManager-1.2.2
+Version 1.0.0  
+For Game Version 1.0.2  
+Developed by Dragon, 18107  
+Requires:  BepInEx-BepInExPack-5.4.2100, VoidCrewModdingTeam-VoidManager-1.2.4
 
 
 ---------------------
 
-### 💡 Function
+### 💡 Functions - Allows the game to be paused during a Void Jump.
 
-- Players can pause the game during a void jump, blocking user input and disabling interdictions.
+- Pauses game after user input. Must be in void tunnel.
+- Allows clients to pause based on settings.
+- Provides keybind and GUI for controlling pause state.
 
 ### 🎮 Client Usage
 
