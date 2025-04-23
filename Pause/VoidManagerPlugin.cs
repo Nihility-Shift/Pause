@@ -1,8 +1,8 @@
 ﻿using BepInEx;
 using CG;
 using CG.Game;
-using CG.Game.SpaceObjects.Controllers;
 using CG.Input;
+using Gameplay.Ship.VoidJump;
 using HarmonyLib;
 using Photon.Pun;
 using System.Reflection;

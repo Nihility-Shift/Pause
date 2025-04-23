@@ -1,3 +1,6 @@
+## 1.0.1
+- Updated for Void Crew 1.1.0
+
 ## 1.0.0
 - Changed pausing ideology from state-saving to timescale freezing.
 - Fixed various issues viewed in earlier versions including interdictions, join dsync issues, and immovable players.
