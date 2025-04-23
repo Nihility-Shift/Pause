@@ -1,5 +1,5 @@
 ﻿using CG.Game;
-using CG.Game.SpaceObjects.Controllers;
+using Gameplay.Ship.VoidJump;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;

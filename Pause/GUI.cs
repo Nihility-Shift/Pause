@@ -1,7 +1,7 @@
-﻿using CG.Game.SpaceObjects.Controllers;
-using CG.Game;
-using VoidManager.CustomGUI;
+﻿using CG.Game;
+using Gameplay.Ship.VoidJump;
 using Photon.Pun;
+using VoidManager.CustomGUI;
 using VoidManager.Utilities;
 using static UnityEngine.GUILayout;
 
