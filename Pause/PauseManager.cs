@@ -1,6 +1,4 @@
-﻿using CG.Game;
-using Gameplay.Ship.VoidJump;
-using Photon.Pun;
+﻿using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using VoidManager.ModMessages;
@@ -54,18 +52,6 @@ namespace Pause
                 RequestPause(!IsPaused);
                 return;
             }
-
-
-            //Check void jump system is in a travelling state. Stop and unpause if not travelling (saves users who got stuck somehow, and blocks pausing outside of void jump travelling)
-            VoidJumpSystem voidJumpSystem = ClientGame.Current?.PlayerShip?.transform?.GetComponent<VoidJumpSystem>();
-            VoidJumpState voidJumpState = voidJumpSystem?.ActiveState;
-            if (voidJumpState == null || (voidJumpState is not VoidJumpTravellingStable && voidJumpState is not VoidJumpTravellingUnstable))
-            {
-                IsPaused = false;
-                return;
-            }
-
-
 
             IsPaused = !IsPaused;
             BepinPlugin.Log.LogInfo($"Toggled Pause from handler");
