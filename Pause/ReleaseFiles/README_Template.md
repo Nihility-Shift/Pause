@@ -14,7 +14,7 @@ Requires: [Dependencies]
 
 ### 💡 Functions - [Description]
 
-- Pauses game after user input. Must be in void tunnel.
+- Pauses game after user input.
 - Allows clients to pause based on settings.
 - Provides keybind and GUI for controlling pause state.
 

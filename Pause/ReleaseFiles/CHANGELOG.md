@@ -1,3 +1,6 @@
+## 1.1.0
+- Removed Void Jump requirement.
+
 ## 1.0.1
 - Updated for Void Crew 1.1.0
 
