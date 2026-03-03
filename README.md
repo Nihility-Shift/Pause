@@ -20,7 +20,6 @@ Requires:  BepInEx-BepInExPack-5.4.2304, NihilityShift-VoidManager-1.2.10
 
 ### 🎮 Client Usage
 
-- Enter a stable void jump
 - Pause using the keybind (Home), or at F5 > Mod Settings > Pause
 - Configure at F5 > Mod Settings > Pause
 

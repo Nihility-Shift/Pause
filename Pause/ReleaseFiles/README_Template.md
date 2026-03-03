@@ -20,7 +20,6 @@ Requires: [Dependencies]
 
 ### 🎮 Client Usage
 
-- Enter a stable void jump
 - Pause using the keybind (Home), or at F5 > Mod Settings > Pause
 - Configure at F5 > Mod Settings > Pause
 
