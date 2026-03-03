@@ -1,5 +1,6 @@
 ## 1.1.0
 - Removed Void Jump requirement.
+- Now pausing audio.
 
 ## 1.0.1
 - Updated for Void Crew 1.1.0
