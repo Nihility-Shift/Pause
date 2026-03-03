@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Detect plugin information
+        id: info
+        run: |
+          # search for csproj file
+          PLUGIN_CSPROJ_FILE=$(find . -name "*.csproj" | head -n 1)
+
+          # extract target framework from csproj file
+          TARGET_FRAMEWORK=$(grep -oP '<TargetFramework>\K[^<]+' "$PLUGIN_CSPROJ_FILE")
+
+          # find plugin directory
+          PLUGIN_DIR=$(dirname "$PLUGIN_CSPROJ_FILE")
+
+          # find plugin info file
+          PLUGIN_INFO_FILE="$PLUGIN_DIR/ReleaseFiles/PluginInfo.config"
+
+          # extract plugin name from PluginInfo.config
+          PLUGIN_NAME=$(grep -oP '^PluginName=\K[^ ]+' "$PLUGIN_INFO_FILE")
+
+          # extract version from PluginInfo.config
+          PLUGIN_VERSION=$(grep -oP '^PluginVersion=\K[0-9.]+(?=)' "$PLUGIN_INFO_FILE")
+
+          # expected zip file name
+          EXPECTED_ZIP_PATH="$PLUGIN_DIR/bin/Debug/$TARGET_FRAMEWORK/Releases/$PLUGIN_NAME-$PLUGIN_VERSION.zip"
+          
+          # set output
+          echo "plugin_csproj_file=$PLUGIN_CSPROJ_FILE" >> $GITHUB_OUTPUT
+          echo "target_framework=$TARGET_FRAMEWORK" >> $GITHUB_OUTPUT
+          echo "plugin_dir=$PLUGIN_DIR" >> $GITHUB_OUTPUT
+          echo "plugin_info_file=$PLUGIN_INFO_FILE" >> $GITHUB_OUTPUT
+          echo "plugin_name=$PLUGIN_NAME" >> $GITHUB_OUTPUT
+          echo "plugin_version=$PLUGIN_VERSION" >> $GITHUB_OUTPUT
+          echo "expected_zip_path=$EXPECTED_ZIP_PATH" >> $GITHUB_OUTPUT
+
+      - name: Build plugin
+        run: |
+          dotnet build
+      
+      - name: Check output
+        run: |
+          ls -lR $(dirname ${{steps.info.outputs.expected_zip_path}})
+          # check whether output zip exists
+          if [ ! -f "${{steps.info.outputs.expected_zip_path}}" ]; then
+            echo "Error: Output zip not found!"
+            exit 1
+          fi
+      
+      # Upload artifacts
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.info.outputs.plugin_name }}-${{ steps.info.outputs.plugin_version }}
+          path: ${{ steps.info.outputs.expected_zip_path }}
+          archive: false
