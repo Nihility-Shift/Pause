@@ -29,6 +29,9 @@ namespace Pause
                     Time.timeScale = 1f;
                     PhotonNetwork.MinimalTimeScaleToDispatchInFixedUpdate = -1f;
                 }
+
+                //Pause audio
+                FMODUnity.RuntimeManager.PauseAllEvents(value);
             }
         }
         internal static bool CanPause { get; private set; } = false;
